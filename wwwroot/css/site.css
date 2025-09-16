@@ -1,0 +1,58 @@
+/* i polished the auth (login/register) card */
+.auth-card {
+  border-radius: .75rem;       /* i softened edges */
+  border: 1px solid #e5e5e5;   /* i gave it a gentle border */
+  background: #fff;            /* i kept it clean white */
+}
+
+.auth-card h2 {
+  font-weight: 600;
+}
+
+.auth-card .form-label {
+  font-weight: 500;            /* i made labels stronger */
+}
+
+.auth-card .form-control-lg {
+  padding-top: .65rem;
+  padding-bottom: .65rem;
+  border-radius: .5rem;        /* i matched the card radius */
+}
+
+.auth-card button.btn-lg {
+  padding-top: .75rem;
+  padding-bottom: .75rem;
+  border-radius: .5rem;
+  font-weight: 600;
+}
+
+.auth-card .form-text {
+  font-size: .85rem;
+  color: #6c757d;
+}
+/* i keep qty input compact and aligned */
+.qty-input {
+  width: 64px;
+  text-align: center;
+}
+
+/* i keep the summary card sticky on large screens for a premium feel */
+@media (min-width: 992px) {
+  .summary-card {
+    position: sticky;
+    top: 86px; /* below navbar + hero */
+  }
+}
+/* product cards - consistent image sizing */
+.product-card .product-img {
+  width: 100%;
+  height: 220px;        /* i fixed all images to the same height */
+  object-fit: cover;    /* i crop them proportionally without distortion */
+  border-top-left-radius: .5rem;
+  border-top-right-radius: .5rem;
+}
+/* Subtle card/table polish */
+.table td, .table th { vertical-align: middle; }
+.table .btn-group .btn { min-width: 88px; }
+.badge.bg-secondary-subtle { background-color: #eef1f4; color: #475569; }
+.sticky-top { position: sticky; top: 0; z-index: 5; }

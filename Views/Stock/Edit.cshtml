@@ -1,0 +1,66 @@
+@model EasyGames.Models.StockItem
+@{
+    ViewData["Title"] = "Edit Stock Item";
+}
+<h2 class="mb-3">Edit Stock Item</h2>
+
+<!-- i show a live preview if an image exists, so owner can see current art -->
+@if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+{
+  <div class="mb-3">
+    <label class="form-label">Current Image</label>
+    <div>
+      <img src="@Model.ImagePath" class="img-thumbnail shadow-sm" style="max-width:260px;" alt="@Model.Name" />
+    </div>
+  </div>
+}
+
+<form method="post" action="/Stock/Edit/@Model.Id" class="row g-3 needs-validation" novalidate>
+  @Html.AntiForgeryToken()
+  @Html.HiddenFor(m => m.Id) <!-- i ensure id is posted -->
+  <partial name="_ValidationSummary" model="ViewData.ModelState" />
+
+  <div class="col-md-6">
+    <label asp-for="Name" class="form-label">Name</label>
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Category" class="form-label">Category</label>
+    <select asp-for="Category" class="form-select">
+      <option>Book</option><option>Game</option><option>Toy</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Price" class="form-label">Price</label>
+    <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+    <span asp-validation-for="Price" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Quantity" class="form-label">Quantity</label>
+    <input asp-for="Quantity" class="form-control" type="number" min="0" />
+    <span asp-validation-for="Quantity" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-9">
+    <label asp-for="ImagePath" class="form-label">Image URL or Path</label>
+    <input asp-for="ImagePath" class="form-control" />
+    <span asp-validation-for="ImagePath" class="text-danger"></span>
+  </div>
+
+  <div class="col-12">
+    <label asp-for="Description" class="form-label">Description</label>
+    <textarea asp-for="Description" rows="4" class="form-control"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+  </div>
+
+  <div class="col-12 d-flex gap-2">
+    <button class="btn btn-primary">Update</button>
+    <a class="btn btn-outline-secondary" href="/Stock">Cancel</a>
+  </div>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

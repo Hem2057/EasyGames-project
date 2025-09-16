@@ -1,0 +1,17 @@
+@model Microsoft.AspNetCore.Mvc.ModelBinding.ModelStateDictionary
+@if (!ViewData.ModelState.IsValid)
+{
+  <!-- I added a human-friendly validation summary for forms -->
+  <div class="alert alert-danger">
+    <strong>Please fix the following:</strong>
+    <ul class="mb-0">
+      @foreach (var kv in Model.Where(m => m.Value!.Errors.Count > 0))
+      {
+        foreach (var err in kv.Value!.Errors)
+        {
+          <li>@err.ErrorMessage</li>
+        }
+      }
+    </ul>
+  </div>
+}

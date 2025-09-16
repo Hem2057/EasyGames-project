@@ -1,0 +1,52 @@
+@model IEnumerable<EasyGames.Controllers.AdminUsersController.UserRow>
+@{
+    ViewData["Title"] = "Users";
+    var allRoles = (List<string>)ViewBag.AllRoles ?? new();
+}
+
+<h2>Users</h2>
+
+@if (TempData["msg"] is string m) { <div class="alert alert-success">@m</div> }
+
+<table class="table table-striped">
+  <thead>
+    <tr><th>Email</th><th>Name</th><th>Roles</th><th class="text-end">Actions</th></tr>
+  </thead>
+  <tbody>
+  @foreach (var u in Model)
+  {
+    <tr>
+      <td>@u.Email</td>
+      <td>@u.FullName</td>
+      <td>@(string.IsNullOrEmpty(u.Roles) ? "-" : u.Roles)</td>
+      <td class="text-end d-flex gap-2 justify-content-end">
+
+        <!-- Add role -->
+        <form method="post" asp-action="AddRole" asp-controller="AdminUsers" class="d-inline">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="userId" value="@u.Id" />
+          <select name="role" class="form-select form-select-sm d-inline w-auto">
+            @foreach (var r in allRoles) { <option>@r</option> }
+          </select>
+          <button class="btn btn-sm btn-secondary">Add Role</button>
+        </form>
+
+        <!-- Remove Owner -->
+        <form method="post" asp-action="RemoveRole" asp-controller="AdminUsers" class="d-inline">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="userId" value="@u.Id" />
+          <input type="hidden" name="role" value="@EasyGames.Data.Seed.OwnerRole" />
+          <button class="btn btn-sm btn-warning">Remove Owner</button>
+        </form>
+
+        <!-- Delete user -->
+        <form method="post" asp-action="Delete" asp-controller="AdminUsers" class="d-inline" onsubmit="return confirm('Delete this user?');">
+          @Html.AntiForgeryToken()
+          <input type="hidden" name="userId" value="@u.Id" />
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>

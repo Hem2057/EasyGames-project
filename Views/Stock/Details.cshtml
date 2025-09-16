@@ -1,0 +1,30 @@
+@model EasyGames.Models.StockItem
+@{
+    ViewData["Title"] = "Item Details";
+}
+<h2 class="mb-3">@Model.Name</h2>
+
+<div class="row g-4">
+  <div class="col-md-6">
+    @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+    {
+      <img src="@Model.ImagePath" class="img-fluid rounded shadow-sm" alt="@Model.Name" />
+    }
+    else
+    {
+      <img src="https://picsum.photos/800/600?blur=1" class="img-fluid rounded shadow-sm" alt="@Model.Name" />
+    }
+  </div>
+  <div class="col-md-6">
+    <p><span class="badge text-bg-secondary">@Model.Category</span></p>
+    <p class="fs-3 fw-bold">@Model.Price.ToString("C")</p>
+    <p class="text-secondary">@Model.Description</p>
+    <p class="text-muted">In stock: <strong>@Model.Quantity</strong></p>
+
+    <div class="d-flex gap-2">
+      <a class="btn btn-warning" href="/Stock/Edit/@Model.Id">Edit</a>
+      <a class="btn btn-outline-danger" href="/Stock/Delete/@Model.Id">Delete</a>
+      <a class="btn btn-outline-secondary" href="/Stock">Back</a>
+    </div>
+  </div>
+</div>

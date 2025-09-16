@@ -1,0 +1,110 @@
+@model List<EasyGames.Models.CartItem>
+@{
+    ViewData["Title"] = "Your Cart";
+    // i calculate total here so the view works even if ViewBag.Total isn't set
+    var total = Model?.Sum(x => x.Price * x.Qty) ?? 0m;
+}
+
+<div class="py-5 text-center bg-light rounded-3 mb-4 shadow-sm">
+  <h1 class="display-5 fw-bold text-dark m-0">Your Cart</h1>
+  <p class="text-secondary mb-0">Review your items before checkout</p>
+</div>
+
+@if (Model == null || !Model.Any())
+{
+  <!-- i added a friendly empty state -->
+  <div class="text-center py-5 bg-white rounded-3 shadow-sm">
+    <h2 class="h4 mb-2">Your cart is empty</h2>
+    <p class="text-muted mb-4">Browse the catalog and add something you like.</p>
+    <a class="btn btn-primary" href="/Catalog">Go to Catalog</a>
+  </div>
+}
+else
+{
+  <!-- i use a two-column layout: left items, right summary -->
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th style="width:45%">Item</th>
+                  <th class="text-end">Price</th>
+                  <th class="text-center" style="width:140px;">Qty</th>
+                  <th class="text-end">Total</th>
+                  <th class="text-end" style="width:120px;"></th>
+                </tr>
+              </thead>
+              <tbody>
+              @foreach (var c in Model)
+              {
+                <tr>
+                  <td class="fw-medium">
+                    @c.Name
+                    <div class="text-muted small">@c.Category</div> <!-- i show category subtly -->
+                  </td>
+
+                  <td class="text-end">@c.Price.ToString("C")</td>
+
+                  <td class="text-center">
+                    <!-- i added a compact qty form that posts to UpdateQty -->
+                    <form asp-action="UpdateQty" method="post" class="d-inline-flex gap-2 justify-content-center">
+                      @Html.AntiForgeryToken()
+                      <input type="hidden" name="id" value="@c.StockItemId" />
+                      <input type="number" min="1" name="qty" value="@c.Qty" class="form-control form-control-sm qty-input" />
+                      <button class="btn btn-outline-secondary btn-sm">Update</button>
+                    </form>
+                  </td>
+
+                  <td class="text-end">@((c.Price * c.Qty).ToString("C"))</td>
+
+                  <td class="text-end">
+                    <form asp-action="Remove" method="post" class="d-inline">
+                      @Html.AntiForgeryToken()
+                      <input type="hidden" name="id" value="@c.StockItemId" />
+                      <button class="btn btn-outline-danger btn-sm">Remove</button>
+                    </form>
+                  </td>
+                </tr>
+              }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- i show a small note below the table -->
+      <div class="text-muted small mt-2">Prices include GST where applicable.</div>
+    </div>
+
+    <div class="col-lg-4">
+      <!-- i added a sticky summary card with checkout button -->
+      <div class="card border-0 shadow-sm summary-card">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Order Summary</h5>
+          <div class="d-flex justify-content-between">
+            <span>Subtotal</span>
+            <span>@total.ToString("C")</span>
+          </div>
+          <div class="d-flex justify-content-between text-muted">
+            <span>Shipping</span>
+            <span>Free</span>
+          </div>
+          <hr />
+          <div class="d-flex justify-content-between fs-5 fw-semibold">
+            <span>Grand Total</span>
+            <span>@total.ToString("C")</span>
+          </div>
+
+          <div class="d-grid mt-3">
+            <a class="btn btn-success btn-lg" asp-action="Checkout">Proceed to Checkout</a>
+          </div>
+          <div class="d-grid mt-2">
+            <a class="btn btn-outline-secondary" href="/Catalog">Continue Shopping</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}

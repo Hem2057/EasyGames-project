@@ -1,0 +1,212 @@
+@model IEnumerable<EasyGames.Models.StockItem>
+@{
+    ViewData["Title"] = "Manage Stock";
+    var categories = Model.Select(m => m.Category).Distinct().OrderBy(c => c).ToList();
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <h2 class="mb-0">Manage Stock</h2>
+        <small class="text-muted">Total items: @Model.Count()</small>
+    </div>
+
+    <a asp-action="Create" class="btn btn-success">
+        <i class="bi bi-plus-lg"></i> New Item
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body pb-0">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col-12 col-md-6">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-search"></i></span>
+                    <input id="searchBox" type="text" class="form-control" placeholder="Search item, category…">
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <select id="categoryFilter" class="form-select">
+                    <option value="">All categories</option>
+                    @foreach (var c in categories)
+                    {
+                        <option value="@c">@c</option>
+                    }
+                </select>
+            </div>
+            <div class="col-6 col-md-3 text-md-end">
+                <span class="badge bg-light text-dark" id="visibleCount">@Model.Count() shown</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover table-striped align-middle mb-0" id="stockTable">
+            <thead class="table-light sticky-top">
+                <tr>
+                    <th style="min-width:260px">Item</th>
+                    <th style="min-width:140px">Category</th>
+                    <th class="text-end" style="min-width:120px">Price</th>
+                    <th class="text-center" style="min-width:80px">Qty</th>
+                    <th class="text-end" style="min-width:180px">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr data-name="@item.Name" data-category="@item.Category">
+                    <td class="fw-semibold">@item.Name</td>
+                    <td>
+                        <span class="badge rounded-pill bg-secondary-subtle text-secondary-emphasis">
+                            @item.Category
+                        </span>
+                    </td>
+                    <td class="text-end">@item.Price.ToString("C")</td>
+                    <td class="text-center">
+                        <span class="badge @(item.Quantity > 10 ? "bg-success" : item.Quantity > 0 ? "bg-warning" : "bg-danger")">
+                            @item.Quantity
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <div class="btn-group">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                <i class="bi bi-info-circle"></i> Details
+                            </a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning">
+                                <i class="bi bi-pencil-square"></i> Edit
+                            </a>
+                            <button type="button"
+                                    class="btn btn-sm btn-outline-danger"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#confirmDeleteModal"
+                                    data-item-id="@item.Id"
+                                    data-item-name="@item.Name">
+                                <i class="bi bi-trash"></i> Delete
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card-footer d-flex justify-content-between align-items-center">
+        <small class="text-muted">Built with ASP.NET Core · SQLite</small>
+        <div class="d-flex align-items-center gap-2">
+            <button class="btn btn-outline-secondary btn-sm" id="prevPage" disabled>
+                <i class="bi bi-chevron-left"></i>
+            </button>
+            <span id="pageInfo" class="small">Page 1</span>
+            <button class="btn btn-outline-secondary btn-sm" id="nextPage" disabled>
+                <i class="bi bi-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Confirm Delete Modal -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Confirm delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to delete <strong id="deleteItemName">this item</strong>?
+      </div>
+      <div class="modal-footer">
+        <form id="deleteForm" method="post">
+            <input type="hidden" name="id" id="deleteItemId" />
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button formaction="@Url.Action("DeleteConfirmed", "Stock")"
+                    formmethod="post"
+                    class="btn btn-danger">
+                <i class="bi bi-trash"></i> Delete
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+<script>
+(() => {
+  // --- search + category filter ---
+  const searchBox = document.getElementById('searchBox');
+  const categoryFilter = document.getElementById('categoryFilter');
+  const rows = Array.from(document.querySelectorAll('#stockTable tbody tr'));
+  const visibleCount = document.getElementById('visibleCount');
+
+  function applyFilters() {
+    const q = (searchBox.value || '').toLowerCase().trim();
+    const cat = (categoryFilter.value || '').toLowerCase();
+    let shown = 0;
+
+    rows.forEach(r => {
+      const name = r.dataset.name.toLowerCase();
+      const category = r.dataset.category.toLowerCase();
+      const match = (!q || name.includes(q) || category.includes(q))
+                 && (!cat || category === cat);
+      r.style.display = match ? '' : 'none';
+      if (match) shown++;
+    });
+
+    visibleCount.textContent = `${shown} shown`;
+    paginate.reset(); // restart pagination after filter
+  }
+
+  searchBox.addEventListener('input', applyFilters);
+  categoryFilter.addEventListener('change', applyFilters);
+
+  // --- lightweight client-side pagination ---
+  const pageSize = 8;
+  const prevBtn = document.getElementById('prevPage');
+  const nextBtn = document.getElementById('nextPage');
+  const pageInfo = document.getElementById('pageInfo');
+
+  const paginate = {
+    page: 1,
+    pages: 1,
+    refresh() {
+      const visibleRows = rows.filter(r => r.style.display !== 'none');
+      this.pages = Math.max(1, Math.ceil(visibleRows.length / pageSize));
+      this.page = Math.min(this.page, this.pages);
+
+      visibleRows.forEach((r, i) => {
+        const start = (this.page - 1) * pageSize;
+        const end = start + pageSize;
+        r.style.display = (i >= start && i < end) ? '' : 'none';
+      });
+
+      // Also hide rows filtered out already:
+      rows.filter(r => r.style.display === 'none' && !r.dataset._filtered).forEach(() => {});
+
+      prevBtn.disabled = this.page <= 1;
+      nextBtn.disabled = this.page >= this.pages;
+      pageInfo.textContent = `Page ${this.page} / ${this.pages}`;
+    },
+    next() { if (this.page < this.pages) { this.page++; this.refresh(); } },
+    prev() { if (this.page > 1) { this.page--; this.refresh(); } },
+    reset() { this.page = 1; this.refresh(); }
+  };
+
+  prevBtn.addEventListener('click', () => paginate.prev());
+  nextBtn.addEventListener('click', () => paginate.next());
+
+  // initial load
+  applyFilters();
+
+  // --- delete modal wiring ---
+  const modal = document.getElementById('confirmDeleteModal');
+  modal.addEventListener('show.bs.modal', event => {
+    const btn = event.relatedTarget;
+    const id = btn?.getAttribute('data-item-id');
+    const name = btn?.getAttribute('data-item-name');
+    document.getElementById('deleteItemId').value = id;
+    document.getElementById('deleteItemName').textContent = name || 'this item';
+  });
+})();
+</script>
+}

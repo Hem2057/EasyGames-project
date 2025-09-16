@@ -1,0 +1,67 @@
+@page
+@model EasyGames.Areas.Identity.Pages.Account.RegisterModel
+@{
+    ViewData["Title"] = "Create account";
+    var returnUrl = Model.ReturnUrl ?? Url.Content("~/"); // i keep returnUrl flow
+}
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-12 col-sm-10 col-md-7 col-lg-5">
+      <div class="card shadow-sm border-0 auth-card">
+        <div class="card-body p-4 p-md-5">
+          <h2 class="h4 mb-3 text-center">Create your account</h2>
+          <p class="text-muted text-center mb-4">It’s quick and secure</p>
+
+          <!-- i show friendly validation summary -->
+          <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+          <form method="post">
+            @Html.AntiForgeryToken() <!-- i ensure anti-forgery -->
+            <input type="hidden" asp-for="ReturnUrl" value="@returnUrl" />
+
+            <div class="mb-3">
+              <label asp-for="Input.FullName" class="form-label">Full name</label>
+              <input asp-for="Input.FullName" class="form-control form-control-lg" placeholder="Alex Smith" />
+              <span asp-validation-for="Input.FullName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+              <label asp-for="Input.Email" class="form-label">Email</label>
+              <input asp-for="Input.Email" class="form-control form-control-lg" placeholder="you@example.com" />
+              <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+              <label asp-for="Input.Password" class="form-label">Password</label>
+              <input asp-for="Input.Password" class="form-control form-control-lg" />
+              <span asp-validation-for="Input.Password" class="text-danger"></span>
+              <div class="form-text">
+                <!-- i reflect your relaxed rules so students don’t get stuck -->
+                Minimum 6 characters; no special character required for this demo.
+              </div>
+            </div>
+
+            <div class="mb-4">
+              <label asp-for="Input.ConfirmPassword" class="form-label">Confirm password</label>
+              <input asp-for="Input.ConfirmPassword" class="form-control form-control-lg" />
+              <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <button class="btn btn-primary w-100 btn-lg">Create account</button>
+          </form>
+
+          <hr class="my-4" />
+          <p class="text-center mb-0">
+            Already have an account?
+            <a href="/Identity/Account/Login@(string.IsNullOrEmpty(returnUrl) ? "" : $"?returnUrl={Uri.EscapeDataString(returnUrl)}")">Log in</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+@section Scripts {
+  <partial name="_ValidationScriptsPartial" />
+}

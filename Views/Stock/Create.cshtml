@@ -1,0 +1,60 @@
+@model EasyGames.Models.StockItem
+@{
+    ViewData["Title"] = "Create Stock Item";
+}
+<h2 class="mb-3">Create Stock Item</h2>
+
+<!-- i added a friendly tip banner -->
+<div class="alert alert-info shadow-sm">
+  <strong>Tip:</strong> Images can be external URLs (e.g., Unsplash) or local paths like <code>/images/products/your-file.jpg</code>.
+</div>
+
+<form method="post" action="/Stock/Create" class="row g-3 needs-validation" novalidate>
+  @Html.AntiForgeryToken()
+  <partial name="_ValidationSummary" model="ViewData.ModelState" /> <!-- i added a human-friendly validation summary -->
+
+  <div class="col-md-6">
+    <label asp-for="Name" class="form-label">Name</label>
+    <input asp-for="Name" class="form-control" placeholder="e.g., C# in Depth (4th Edition)" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Category" class="form-label">Category</label>
+    <select asp-for="Category" class="form-select">
+      <!-- i kept your three categories for consistency with requirements -->
+      <option>Book</option><option>Game</option><option>Toy</option>
+    </select>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Price" class="form-label">Price</label>
+    <input asp-for="Price" class="form-control" type="number" step="0.01" min="0" />
+    <span asp-validation-for="Price" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-3">
+    <label asp-for="Quantity" class="form-label">Quantity</label>
+    <input asp-for="Quantity" class="form-control" type="number" min="0" />
+    <span asp-validation-for="Quantity" class="text-danger"></span>
+  </div>
+
+  <div class="col-md-9">
+    <label asp-for="ImagePath" class="form-label">Image URL or Path</label>
+    <input asp-for="ImagePath" class="form-control" placeholder="https://… or /images/products/…" />
+    <span asp-validation-for="ImagePath" class="text-danger"></span>
+  </div>
+
+  <div class="col-12">
+    <label asp-for="Description" class="form-label">Description</label>
+    <textarea asp-for="Description" rows="4" class="form-control" placeholder="Short, helpful product description…"></textarea>
+    <span asp-validation-for="Description" class="text-danger"></span>
+  </div>
+
+  <div class="col-12 d-flex gap-2">
+    <button class="btn btn-primary">Save</button> <!-- i kept primary CTA on left -->
+    <a class="btn btn-outline-secondary" href="/Stock">Cancel</a>
+  </div>
+</form>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

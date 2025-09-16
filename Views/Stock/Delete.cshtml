@@ -1,0 +1,41 @@
+@model EasyGames.Models.StockItem
+@{
+    ViewData["Title"] = "Delete Stock Item";
+}
+<h2 class="mb-3">Delete “@Model.Name”</h2>
+
+<!-- i added a clear warning card so the action feels deliberate -->
+<div class="card border-danger shadow-sm mb-3">
+  <div class="card-header bg-danger text-white">
+    <strong>Warning</strong> — This action cannot be undone.
+  </div>
+  <div class="card-body">
+    <div class="row g-3">
+      <div class="col-md-4">
+        @if (!string.IsNullOrWhiteSpace(Model.ImagePath))
+        {
+          <img src="@Model.ImagePath" class="img-fluid rounded" alt="@Model.Name" />
+        }
+        else
+        {
+          <img src="https://picsum.photos/600/400?blur=1" class="img-fluid rounded" alt="@Model.Name" />
+        }
+      </div>
+      <div class="col-md-8">
+        <dl class="row">
+          <dt class="col-sm-3">Category</dt><dd class="col-sm-9">@Model.Category</dd>
+          <dt class="col-sm-3">Price</dt><dd class="col-sm-9">@Model.Price.ToString("C")</dd>
+          <dt class="col-sm-3">Quantity</dt><dd class="col-sm-9">@Model.Quantity</dd>
+          <dt class="col-sm-3">Description</dt><dd class="col-sm-9">@Model.Description</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+
+<form method="post" action="/Stock/Delete/@Model.Id" onsubmit="return confirm('Delete this item?');">
+  @Html.AntiForgeryToken()
+  <input type="hidden" name="id" value="@Model.Id" /> <!-- i ensure route & form both carry id -->
+  <button class="btn btn-danger">Delete</button>
+  <a class="btn btn-outline-secondary" href="/Stock">Cancel</a>
+</form>
