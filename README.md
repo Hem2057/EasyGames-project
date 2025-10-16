@@ -58,7 +58,14 @@ Use the following credentials to log in:
 
 ## Setup & Running the Project
 1. **Clone or unzip the project.**
+2. ### Prerequisites
+- .NET 9 SDK installed ([download here](https://dotnet.microsoft.com/download/dotnet/9.0))
+- SQLite (comes pre-bundled with .NET provider)
 
-2. **Install dependencies:**
-   ```bash
-   dotnet restore
+3. **Install dependencies:**
+```bash
+git clone https://github.com/Hem2057/EasyGames-project.git
+cd EasyGames-project
+dotnet restore
+dotnet ef database update
+dotnet run

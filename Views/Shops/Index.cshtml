@@ -1,0 +1,19 @@
+@model IEnumerable<Shop>
+<h2>Shops</h2>
+<p><a class="btn btn-primary" href="/Shops/Create">Create Shop</a></p>
+<table class="table">
+<thead><tr><th>Name</th><th>Location</th><th></th></tr></thead>
+<tbody>
+@foreach (var s in Model)
+{
+<tr>
+  <td>@s.Name</td>
+  <td>@s.Location</td>
+  <td>
+    <a class="btn btn-sm btn-secondary" href="/Shops/Edit/@s.Id">Edit</a>
+    <a class="btn btn-sm btn-outline-danger" href="/Shops/Delete/@s.Id">Delete</a>
+  </td>
+</tr>
+}
+</tbody>
+</table>

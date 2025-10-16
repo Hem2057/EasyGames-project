@@ -33,7 +33,7 @@
   </div>
 </div>
 
-<form method="post" action="/Stock/Delete/@Model.Id" onsubmit="return confirm('Delete this item?');">
+<form asp-action="Delete" asp-controller="Stock" asp-route-id="@Model.Id" method="post" onsubmit="return confirm('Delete this item?');">
   @Html.AntiForgeryToken()
   <input type="hidden" name="id" value="@Model.Id" /> <!-- i ensure route & form both carry id -->
   <button class="btn btn-danger">Delete</button>

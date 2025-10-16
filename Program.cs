@@ -1,5 +1,7 @@
-using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
 using EasyGames.Data;
+using Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore;
+using EasyGames.Models;
+using EasyGames.Services; // ✅ Added
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -34,6 +36,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(opts =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
+// ✅ Add Dummy Email Service for EmailController
+builder.Services.AddScoped<IEmailService, DummyEmailService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -51,8 +57,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
-// Session BEFORE auth is ideal for apps that may read session in auth handlers
-app.UseSession();
+app.UseSession();  // ✅ Correct order
 app.UseAuthentication();
 app.UseAuthorization();
 

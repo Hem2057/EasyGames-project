@@ -1,0 +1,39 @@
+@model IEnumerable<ShopStock>
+@{ var shop = (Shop)ViewBag.Shop; var ownerItems = (IEnumerable<StockItem>)ViewBag.OwnerItems; }
+<h2>Shop Stock – @shop.Name</h2>
+
+<h5>Add from Owner Inventory</h5>
+<form method="post" action="/ShopStock/Add" class="row g-2 mb-3">
+  <input type="hidden" name="shopId" value="@shop.Id"/>
+  <div class="col-auto">
+    <select class="form-select" name="stockItemId">
+      @foreach (var i in ownerItems) { <option value="@i.Id">@i.Name (@i.Category)</option> }
+    </select>
+  </div>
+  <div class="col-auto"><input class="form-control" type="number" name="qty" value="1" min="1"/></div>
+  <div class="col-auto"><button class="btn btn-primary">Add</button></div>
+</form>
+
+<h5>Current Shop Inventory</h5>
+<table class="table">
+<thead><tr><th>Item</th><th>Qty</th><th>Sell</th><th>Profit</th><th></th></tr></thead>
+<tbody>
+@foreach (var ss in Model)
+{
+<tr class="@(ss.Quantity<=0?"table-danger":(ss.Quantity<3?"table-warning":""))">
+  <td>@ss.StockItem!.Name</td>
+  <td>
+    <form method="post" action="/ShopStock/Update" class="d-flex gap-2">
+      <input type="hidden" name="id" value="@ss.Id"/>
+      <input type="hidden" name="shopId" value="@shop.Id"/>
+      <input class="form-control" type="number" name="qty" value="@ss.Quantity" min="0" style="max-width:120px"/>
+      <button class="btn btn-sm btn-secondary">Save</button>
+    </form>
+  </td>
+  <td>@ss.StockItem!.SellPrice.ToString("C")</td>
+  <td>@(ss.StockItem!.SellPrice - ss.StockItem!.BuyPrice)</td>
+  <td></td>
+</tr>
+}
+</tbody>
+</table>

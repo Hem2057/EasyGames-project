@@ -1,0 +1,114 @@
+@model (EasyGames.Models.ApplicationUser user, List<EasyGames.Models.Sale> sales)
+@{
+    ViewData["Title"] = "My Account";
+    string tierColor = Model.user.Tier switch
+    {
+        "Bronze" => "text-bg-warning",
+        "Silver" => "text-bg-secondary",
+        "Gold" => "text-bg-warning bg-gradient",
+        "Platinum" => "text-bg-info bg-gradient",
+        _ => "text-bg-light"
+    };
+}
+
+<div class="container py-4">
+    <!-- Profile Header -->
+    <div class="card shadow-sm border-0 mb-4">
+        <div class="card-body d-flex flex-column flex-md-row align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-primary bg-opacity-25 d-flex align-items-center justify-content-center"
+                     style="width: 70px; height: 70px;">
+                    <i class="bi bi-person-circle text-primary fs-1"></i>
+                </div>
+                <div>
+                    <h4 class="mb-1 fw-semibold">@Model.user.FullName</h4>
+                    <p class="text-muted small mb-0">@Model.user.Email</p>
+                </div>
+            </div>
+
+            <div class="text-md-end mt-3 mt-md-0">
+                <span class="badge @tierColor px-3 py-2 fs-6 shadow-sm">
+                    <i class="bi bi-award me-1"></i> @Model.user.Tier
+                </span>
+                <p class="mt-2 mb-0 fw-semibold">
+                    Lifetime Profit: 
+                    <span class="text-success">@Model.user.LifetimeProfitContribution.ToString("C")</span>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Purchase History Section -->
+    <div class="card border-0 shadow-sm">
+        <div class="card-header bg-light border-0 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0 fw-semibold">
+                <i class="bi bi-receipt-cutoff me-2 text-primary"></i> Purchase History
+            </h5>
+            <span class="badge bg-secondary-subtle text-secondary-emphasis">@Model.sales.Count purchase(s)</span>
+        </div>
+
+        <div class="card-body p-0">
+            @if (!Model.sales.Any())
+            {
+                <div class="text-center py-5 text-muted">
+                    <i class="bi bi-emoji-frown fs-1 d-block mb-2"></i>
+                    <p>You haven’t made any purchases yet.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Items</th>
+                                <th class="text-end">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @foreach (var s in Model.sales)
+                        {
+                            <tr>
+                                <td class="fw-semibold">@s.Date.ToLocalTime().ToString("g")</td>
+                                <td>
+                                    @foreach (var l in s.Lines)
+                                    {
+                                        <div>
+                                            <i class="bi bi-controller me-1 text-primary"></i>
+                                            @l.StockItem!.Name × @l.Quantity 
+                                            <span class="text-muted small">(@l.UnitPrice.ToString("C"))</span>
+                                        </div>
+                                    }
+                                </td>
+                                <td class="text-end fw-semibold">@s.TotalPrice.ToString("C")</td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<style>
+    .fade-in {
+        animation: fadein 0.6s ease-in;
+    }
+
+    /* Notice the double @@ — this escapes Razor parsing */
+    @@keyframes fadein {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+@section Scripts {
+    <script>
+        // Smooth fade-in animation
+        document.addEventListener("DOMContentLoaded", () => {
+            document.body.classList.add("fade-in");
+        });
+    </script>
+}

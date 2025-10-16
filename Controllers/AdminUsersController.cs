@@ -1,4 +1,5 @@
 using EasyGames.Data;
+using EasyGames.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -30,7 +31,9 @@ public class AdminUsersController : Controller
                 Id = u.Id,
                 Email = u.Email ?? "",
                 FullName = u.FullName ?? "",
-                Roles = string.Join(", ", roles)
+                Roles = string.Join(", ", roles),
+                Tier = u.Tier ?? "Bronze", 
+                LifetimeProfitContribution = u.LifetimeProfitContribution
             });
         }
         ViewBag.AllRoles = _roleMgr.Roles.Select(r => r.Name!).ToList();
@@ -82,5 +85,7 @@ public class AdminUsersController : Controller
         public string Email { get; set; } = "";
         public string FullName { get; set; } = "";
         public string Roles { get; set; } = "";
+        public string Tier { get; set; } = "Bronze";
+    public decimal LifetimeProfitContribution { get; set; } = 0;
     }
 }

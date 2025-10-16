@@ -1,0 +1,24 @@
+<h2>Email Users</h2>
+@if (ViewBag.Status != null)
+{
+    <div class="alert alert-success">@ViewBag.Status</div>
+}
+
+<form method="post" action="/Email/Send" class="row g-3">
+  <div class="col-12 col-md-3">
+    <label class="form-label">Tier (optional)</label>
+    <select class="form-select" name="tier">
+      <option value="">All</option>
+      <option>Bronze</option><option>Silver</option><option>Gold</option><option>Platinum</option>
+    </select>
+  </div>
+  <div class="col-12">
+    <label class="form-label">Subject</label>
+    <input class="form-control" name="subject" required/>
+  </div>
+  <div class="col-12">
+    <label class="form-label">Message (HTML allowed)</label>
+    <textarea class="form-control" name="message" rows="6" required></textarea>
+  </div>
+  <div class="col-12"><button class="btn btn-primary">Send</button></div>
+</form>

@@ -1,0 +1,31 @@
+@model IEnumerable<ShopStock>
+@{ var shops = (IEnumerable<Shop>)ViewBag.Shops; int selected = (int)ViewBag.ShopId; }
+<h2>POS</h2>
+<form class="mb-3">
+  <select class="form-select" name="shopId" onchange="this.form.submit()" style="max-width:320px">
+    @foreach (var s in shops) { <option value="@s.Id" selected="@(s.Id==selected)">@s.Name</option> }
+  </select>
+</form>
+<table class="table table-sm">
+<thead><tr><th>Item</th><th>Qty</th><th>Sell</th><th>Action</th></tr></thead>
+<tbody>
+@foreach (var ss in Model)
+{
+<tr class="@(ss.Quantity<=0?"table-danger":(ss.Quantity<3?"table-warning":""))">
+  <td>@ss.StockItem!.Name</td>
+  <td>@ss.Quantity</td>
+  <td>@ss.StockItem!.SellPrice.ToString("C")</td>
+  <td>
+    <form method="post" action="/Pos/Sell" class="d-flex gap-2">
+      <input type="hidden" name="shopId" value="@selected"/>
+      <input type="hidden" name="stockItemId" value="@ss.StockItemId"/>
+      <input class="form-control form-control-sm" type="number" name="qty" value="1" min="1" style="max-width:100px"/>
+      <input class="form-control form-control-sm" name="phone" placeholder="Phone (optional)" style="max-width:200px"/>
+      <button class="btn btn-sm btn-primary">Sell</button>
+    </form>
+  </td>
+</tr>
+}
+</tbody>
+</table>
+<p class="text-muted">Warn at low/zero stock but do not block the sale (per requirement).</p>
